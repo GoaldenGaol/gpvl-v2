@@ -20,6 +20,25 @@ pip install -e ".[dev]"
 pytest tests/ -v
 ```
 
+## CLI
+
+After install, the `gpvl` command is available:
+
+```bash
+gpvl info                          # project + dataset summary
+gpvl validate                      # dim4 → TFR validation stats
+gpvl validate --json               # machine-readable output
+gpvl export-latex                  # full arXiv bundle → docs/arxiv/
+gpvl export-latex -o build/arxiv   # custom output directory
+gpvl export-latex --equations-only # equations.tex + thresholds.tex only
+```
+
+Equivalent module invocation:
+
+```bash
+python -m volition.cli export-latex --bundle
+```
+
 ## Usage Examples
 
 ### Regime classification
@@ -75,10 +94,17 @@ print(f"alpha={params.alpha:.3f}, beta={params.beta:.3f}, r={params.pearson_r:.3
 ### LaTeX export
 
 ```python
-from volition.export.latex import write_equations_tex
+from volition.export.latex import write_arxiv_bundle
 
-path = write_equations_tex("docs/arxiv")
-print(f"Equations written to {path}")
+result = write_arxiv_bundle("docs/arxiv")
+print(f"Main document: {result.main_tex}")
+# Compile: pdflatex main.tex  (from docs/arxiv/)
+```
+
+Or via CLI:
+
+```bash
+gpvl export-latex
 ```
 
 ## Simulations
@@ -132,10 +158,11 @@ $\mathrm{dim4} > 1.00$ (irreversibility) show zero historical reversals.
 \end{abstract}
 ```
 
-Generate equation appendix:
+Generate full arXiv manuscript fragments:
 
 ```bash
-python -c "from volition.export.latex import write_equations_tex; write_equations_tex()"
+gpvl export-latex
+# writes docs/arxiv/main.tex, equations.tex, thresholds.tex, validation.tex, ...
 ```
 
 ## Core Documents

@@ -35,6 +35,9 @@ dev = [
     "ruff>=0.3",
 ]
 
+[project.scripts]
+gpvl = "volition.cli:main"
+
 [project.urls]
 Homepage = "https://github.com/GoaldenGaol/science-of-volition"
 Documentation = "https://github.com/GoaldenGaol/gpvl-v2"
@@ -43,12 +46,19 @@ Source = "https://github.com/GoaldenGaol/gpvl-v2"
 [tool.hatch.build.targets.wheel]
 packages = ["src/volition"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"src/volition/data/files" = "volition/data/files"
+
 [tool.hatch.build.targets.sdist]
 include = [
-    "src/volition",
-    "data",
-    "docs",
-    "tests",
+    "/src",
+    "/data",
+    "/docs",
+    "/tests",
+    "/simulations",
+    "/README.md",
+    "/LICENSE",
+    "/pyproject.toml",
 ]
 
 [tool.pytest.ini_options]

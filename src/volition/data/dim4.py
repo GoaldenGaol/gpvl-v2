@@ -2,36 +2,26 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 
 from volition.constants import DIM4_IRREVERSIBLE, DIM4_NO_RETURN
-
-DATA_DIR = Path(__file__).resolve().parents[3] / "data"
-
-
-def _data_path(filename: str) -> Path:
-    path = DATA_DIR / filename
-    if not path.exists():
-        raise FileNotFoundError(f"Dataset not found: {path}")
-    return path
+from volition.paths import data_file
 
 
 def load_countries() -> pd.DataFrame:
     """Load country-level dim4 snapshot with matching TFR."""
-    return pd.read_csv(_data_path("dim4_frozen_2023.csv"))
+    return pd.read_csv(data_file("dim4_frozen_2023.csv"))
 
 
 def load_countries_full() -> pd.DataFrame:
     """Load complete 187-country frozen dim4 dataset."""
-    return pd.read_csv(_data_path("dim4_frozen_2023_full.csv"))
+    return pd.read_csv(data_file("dim4_frozen_2023_full.csv"))
 
 
 def load_firms() -> pd.DataFrame:
     """Load firm-level dim4 scalar (collapse vs survival)."""
-    return pd.read_csv(_data_path("dim4_firms_frozen_2023.csv"))
+    return pd.read_csv(data_file("dim4_firms_frozen_2023.csv"))
 
 
 def validation_stats(df: pd.DataFrame | None = None) -> dict[str, float]:
