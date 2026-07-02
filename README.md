@@ -48,10 +48,32 @@ from volition import classify_regime, hazard_of_collapse, VolitionalState
 
 state = VolitionalState(name="South Korea", year=2023, dim4=1.41, tfr=0.72)
 print(state.summarize())
-# South Korea (2023) — dim4=1.41, TFR=0.72, regime=IRREVERSIBLE, hazard_of_collapse=0.731
+print(state.summarize(verbose=True))  # includes band, kind, irreversible flag
 
 print(classify_regime(0.95))       # Regime.PRE_COLLAPSE
 print(hazard_of_collapse(1.41))    # ~0.73
+```
+
+### Regime transition matrix Θ
+
+```python
+from volition import Regime, RegimeTransitionMatrix
+
+theta = RegimeTransitionMatrix.default()
+chain = theta.simulate(Regime.COOPERATIVE, n_steps=20, seed=42)
+print(chain)  # Markov regime path
+print(theta.stationary_distribution())
+```
+
+### Firm-level fatal pivot
+
+```python
+from volition.data import load_firm_states, firm_validation_stats, classify_firm_risk
+
+firms = load_firm_states()
+stats = firm_validation_stats()
+print(f"ROC-AUC = {stats['roc_auc']:.3f}")
+print(classify_firm_risk(1.20))  # CRITICAL
 ```
 
 ### dim4 data validation

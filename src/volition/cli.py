@@ -8,6 +8,7 @@ import sys
 
 from volition import __version__
 from volition.data.dim4 import load_countries_full, validation_stats
+from volition.data.firms import firm_validation_stats, load_firm_states
 from volition.export.latex import write_arxiv_bundle, write_equations_tex
 from volition.paths import default_arxiv_dir
 
@@ -53,12 +54,16 @@ def _cmd_export_latex(args: argparse.Namespace) -> int:
 
 def _cmd_info(_: argparse.Namespace) -> int:
     countries = load_countries_full()
-    stats = validation_stats()
+    country_stats = validation_stats()
+    firm_stats = firm_validation_stats()
+    firms = load_firm_states()
     print("GPVL v2 — Science of Volition")
-    print(f"  Version        : {__version__}")
-    print(f"  Full dataset   : {len(countries)} countries")
-    print(f"  Validation r   : {stats['pearson_r']:.4f}")
-    print(f"  LaTeX output   : {default_arxiv_dir()}")
+    print(f"  Version          : {__version__}")
+    print(f"  Countries (full) : {len(countries)}")
+    print(f"  Firms            : {len(firms)}")
+    print(f"  Country r        : {country_stats['pearson_r']:.4f}")
+    print(f"  Firm ROC-AUC     : {firm_stats['roc_auc']:.4f}")
+    print(f"  LaTeX output     : {default_arxiv_dir()}")
     return 0
 
 
