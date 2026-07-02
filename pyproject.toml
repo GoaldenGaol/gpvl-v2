@@ -1,0 +1,63 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gpvl-v2"
+version = "2.0.0"
+description = "GPVL v2 — General Physics of Volition: cooperative equilibria, dim4 dynamics, and VPDE modeling"
+readme = "README.md"
+license = "CC-BY-4.0"
+requires-python = ">=3.11"
+authors = [{ name = "GoaldenGaol", email = "shlewi88@gmail.com" }]
+keywords = ["volition", "dim4", "cooperative-equilibria", "vpde", "octonion", "g2"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: Free for non-commercial use",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+dependencies = [
+    "numpy>=1.26",
+    "scipy>=1.12",
+    "sympy>=1.12",
+    "matplotlib>=3.8",
+    "pandas>=2.1",
+    "emcee>=3.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.1",
+    "ruff>=0.3",
+]
+
+[project.urls]
+Homepage = "https://github.com/GoaldenGaol/science-of-volition"
+Documentation = "https://github.com/GoaldenGaol/gpvl-v2"
+Source = "https://github.com/GoaldenGaol/gpvl-v2"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/volition"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/volition",
+    "data",
+    "docs",
+    "tests",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
