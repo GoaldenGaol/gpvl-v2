@@ -1,7 +1,39 @@
 \section{Core Equations}
+\subsection{Fertility Mappings}
 \begin{align}
-\text{Fertility (linear):} \quad & TFR = \alpha dim_{4} + \beta \\
-\text{Fertility (quadratic):} \quad & TFR = \alpha dim_{4}^{2} + \beta dim_{4} + \gamma \\
-\text{Goalden threshold:} \quad & \rho_{plunder} < \frac{C_{mean} R_{mean}}{10} = \text{True} \\
-\text{Transition map:} \quad & dim4_{t+1} = \alpha \rho_{plunder} + dim_{4} + u
+\mathrm{TFR}_{\text{linear}} &= \alpha dim_{4} + \beta \\
+\mathrm{TFR}_{\text{quadratic}} &= \alpha dim_{4}^{2} + \beta dim_{4} + \gamma \\
+\frac{\partial \mathrm{TFR}}{\partial \mathrm{dim4}} &< 0
+\end{align}
+
+\subsection{Goalden Threshold}
+\begin{equation}
+\rho_{plunder} < \frac{C_{mean} R_{mean}}{10}
+\end{equation}
+
+\subsection{Transition Map $\Phi$}
+\begin{equation}
+dim4_{t+1} = DI couple_{di4} - couple_{delta4} \delta_{coop} + couple_{rho4} \rho_{plunder} + dim_{4} \phi_{p4} + dim_{4} + u
+\end{equation}
+
+\subsection{System Dynamics $S(t)$}
+\begin{align}
+\left[ P_{t+1} = P + X \left(1 - \rho_{plunder}\right) - \lambda \rho_{plunder}, \  C_{t+1} = C + F_{i}, \  B_{t+1} = B + F_{i} \alpha_{B}, \  X_{t+1} = C g_{C} + X, \  Omega_{t+1} = \Omega + \delta_{coop} - \rho_{plunder}\right]
+\end{align}
+
+\subsection{Regime Transition Matrix $\Theta$}
+\begin{equation}
+\Theta = \begin{bmatrix}
+\text{COOP} & \text{PRE} & \text{IRREV} \\
+\midrule
+0.85 & 0.14 & 0.01 \\
+0.05 & 0.70 & 0.25 \\
+0.00 & 0.00 & 1.00 \\
+\end{bmatrix}
+\end{equation}
+
+\subsection{Axioms (excerpt)}
+\begin{align}
+\text{Axiom 6:} \quad & E_{F aggression} \leq 0 \\
+\text{Axiom 8:} \quad & C_{t+1} = C + F_{i}
 \end{align}

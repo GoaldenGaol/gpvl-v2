@@ -7,8 +7,9 @@ import json
 import sys
 
 from volition import __version__
-from volition.data.dim4 import load_countries_full, validation_stats
-from volition.data.firms import firm_validation_stats, load_firm_states
+from volition.data.dim4 import load_countries, load_countries_full, validation_stats
+from volition.data.firms import firm_validation_stats, load_firm_states, load_firms_df
+from volition.equations.invariants import check_all_invariants
 from volition.export.latex import write_arxiv_bundle, write_equations_tex
 from volition.paths import default_arxiv_dir
 
@@ -49,6 +50,32 @@ def _cmd_export_latex(args: argparse.Namespace) -> int:
         print(f"Wrote equations to {path}")
         print(f"Wrote thresholds to {path.parent / 'thresholds.tex'}")
 
+    return 0
+
+
+def _cmd_invariants(args: argparse.Namespace) -> int:
+    country_df = load_countries()
+    firm_df = load_firms_df()
+    firm_stats = firm_validation_stats(firm_df)
+    results = check_all_invariants(
+        country_df["dim4"].to_numpy(),
+        country_df["tfr_future"].to_numpy(),
+        firm_df["dim4_firm"].to_numpy(),
+        firm_df["y_pivot_5yr"].to_numpy(dtype=bool),
+        firm_stats["roc_auc"],
+    )
+    if args.json:
+        import json
+        print(json.dumps(
+            {r.invariant: {"satisfied": r.satisfied, "statistic": r.statistic, "detail": r.detail}
+             for r in results},
+            indent=2,
+        ))
+    else:
+        print("Empirical Invariants A–E")
+        for r in results:
+            mark = "PASS" if r.satisfied else "FAIL"
+            print(f"  [{mark}] {r.invariant}: {r.detail}")
     return 0
 
 
@@ -104,6 +131,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="Write only equations.tex and thresholds.tex",
     )
     export.set_defaults(func=_cmd_export_latex)
+
+    inv = sub.add_parser("invariants", help="Check empirical invariants A–E")
+    inv.add_argument("--json", action="store_true", help="Output as JSON")
+    inv.set_defaults(func=_cmd_invariants)
 
     return parser
 

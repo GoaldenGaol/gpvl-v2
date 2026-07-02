@@ -89,22 +89,56 @@ MCMC inference, and extensible octonion/$G_2$ geometry hooks.
 
 
 def export_equations_content() -> str:
-    """Return LaTeX align block for core equations."""
-    equations = export_equations_latex()
+    """Return LaTeX align block for core equations, Φ, dynamics, and axioms."""
+    eq = export_equations_latex()
     return (
         r"""\section{Core Equations}
+\subsection{Fertility Mappings}
 \begin{align}
-\text{Fertility (linear):} \quad & """
-        + equations["fertility_linear"]
+\mathrm{TFR}_{\text{linear}} &= """
+        + eq["fertility_linear"].split("=", 1)[-1].strip()
         + r""" \\
-\text{Fertility (quadratic):} \quad & """
-        + equations["fertility_quadratic"]
+\mathrm{TFR}_{\text{quadratic}} &= """
+        + eq["fertility_quadratic"].split("=", 1)[-1].strip()
         + r""" \\
-\text{Goalden threshold:} \quad & """
-        + equations["goalden_threshold"]
+\frac{\partial \mathrm{TFR}}{\partial \mathrm{dim4}} &< 0
+\end{align}
+
+\subsection{Goalden Threshold}
+\begin{equation}
+"""
+        + eq["goalden_threshold"]
+        + r"""
+\end{equation}
+
+\subsection{Transition Map $\Phi$}
+\begin{equation}
+"""
+        + eq["phi_dim4"]
+        + r"""
+\end{equation}
+
+\subsection{System Dynamics $S(t)$}
+\begin{align}
+"""
+        + eq["dynamics"].replace(r"\\", r" \nonumber \\")
+        + r"""
+\end{align}
+
+\subsection{Regime Transition Matrix $\Theta$}
+\begin{equation}
+\Theta = """
+        + eq["regime_theta"]
+        + r"""
+\end{equation}
+
+\subsection{Axioms (excerpt)}
+\begin{align}
+\text{Axiom 6:} \quad & """
+        + eq["axiom_6"]
         + r""" \\
-\text{Transition map:} \quad & """
-        + equations["transition_map"]
+\text{Axiom 8:} \quad & """
+        + eq["axiom_8"]
         + r"""
 \end{align}
 """

@@ -31,6 +31,27 @@ gpvl validate --json               # machine-readable output
 gpvl export-latex                  # full arXiv bundle → docs/arxiv/
 gpvl export-latex -o build/arxiv   # custom output directory
 gpvl export-latex --equations-only # equations.tex + thresholds.tex only
+gpvl invariants                    # check empirical invariants A–E
+```
+
+### Symbolic equations and Φ transition map
+
+```python
+from volition.equations import (
+    phi_transition_equations,
+    evaluate_phi,
+    all_axioms,
+    check_all_invariants,
+)
+import numpy as np
+
+# 7-D transition map V(t+1) = Φ(V(t), i_t, u(t))
+print(phi_transition_equations()[3])  # dim4 component
+
+state = np.array([0, 0, 0, 0.85, 0, 0, 0])
+print(evaluate_phi(state, rho_plunder=0.03))
+
+print(list(all_axioms().keys()))  # axiom_1 … axiom_8
 ```
 
 Equivalent module invocation:
