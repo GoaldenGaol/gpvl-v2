@@ -40,12 +40,13 @@ def coupling_vector() -> sp.Matrix:
     """
     d1, d2, d3, d4, d5, d6, d7 = volitional_vector()
     c1, c2, c3, c4, c5, c6, c7 = phi_couple[:7]
+    # Λ V + b(i,u): persistence is in Λ; coupling is control-only (no duplicate d4).
     return sp.Matrix([
-        c1 * d4,
-        c2 * d4,
+        c1 * rho_plunder,
+        c2 * DI,
         c3 * rho_plunder,
-        d4 + couple_rho4 * rho_plunder + couple_di4 * DI - couple_delta4 * delta_coop + u,
-        c4 * d4,
+        couple_rho4 * rho_plunder + couple_di4 * DI - couple_delta4 * delta_coop + u,
+        c4 * delta_coop,
         c5 * DI,
         c6 * delta_coop + c7 * F_i,
     ])
@@ -80,20 +81,33 @@ class PhiParameters:
 
     @classmethod
     def default(cls) -> PhiParameters:
+        # dim4 persistence = 1.0: stress accumulates; coupling drives upward drift.
         return cls(
-            persistence=np.array([0.92, 0.90, 0.88, 0.95, 0.89, 0.87, 0.86]),
+            persistence=np.array([0.92, 0.90, 0.88, 1.00, 0.89, 0.87, 0.86]),
             coupling=np.array([0.02, 0.01, 0.05, 0.01, 0.01, 0.03, 0.02]),
-            rho4=0.08,
-            di4=0.03,
-            delta4=0.02,
+            rho4=0.40,
+            di4=0.12,
+            delta4=0.04,
         )
+
+
+_EVALUATOR_CACHE: dict[tuple, Callable[..., NDArray[np.float64]]] = {}
 
 
 def build_phi_evaluator(
     params: PhiParameters | None = None,
 ) -> Callable[..., NDArray[np.float64]]:
-    """Build numeric Φ evaluator via sympy.lambdify."""
+    """Build numeric Φ evaluator via sympy.lambdify (cached per parameter set)."""
     p = params or PhiParameters.default()
+    cache_key = (
+        tuple(p.persistence.tolist()),
+        tuple(p.coupling.tolist()),
+        p.rho4,
+        p.di4,
+        p.delta4,
+    )
+    if cache_key in _EVALUATOR_CACHE:
+        return _EVALUATOR_CACHE[cache_key]
     v = volitional_vector()
     rhs = phi_rhs()
 
@@ -131,6 +145,7 @@ def build_phi_evaluator(
         )
         return np.asarray(result, dtype=np.float64).flatten()
 
+    _EVALUATOR_CACHE[cache_key] = evaluate
     return evaluate
 
 
@@ -145,8 +160,7 @@ def evaluate_phi(
     params: PhiParameters | None = None,
 ) -> NDArray[np.float64]:
     """Evaluate V(t+1) = Φ(V(t), i_t, u(t)) numerically."""
-    evaluator = build_phi_evaluator(params)
-    return evaluator(
+    return build_phi_evaluator(params)(
         state,
         rho_plunder,
         institutional_drift,

@@ -5,24 +5,27 @@ import os
 import matplotlib.pyplot as plt
 
 from volition.regime import Regime, RegimeTransitionMatrix, classify_regime
-from volition.vpde import solve_vpde
+from volition.vpde import RampControls, default_calibrated_config, solve_vpde
+from volition.vpde.controls import GOALDEN_CONTROLS
 
 
 def main() -> None:
     initial_values = [0.75, 0.90, 0.98, 1.10]
+    cfg = default_calibrated_config()
     fig, axes = plt.subplots(1, 2, figsize=(12, 5))
 
-    # Panel 1: VPDE continuous dim4 trajectories
+    # Panel 1: Phi-coupled VPDE dim4 trajectories (calibrated τ)
     ax = axes[0]
     for v0 in initial_values:
-        t, trajectory = solve_vpde(v0)
+        controls = RampControls() if v0 >= 0.90 else GOALDEN_CONTROLS
+        t, trajectory = solve_vpde(v0, cfg, controls=controls)
         ax.plot(t, trajectory, label=f"dim4₀={v0:.2f}")
 
     ax.axhline(0.92, color="orange", linestyle="--", label="coop collapse (+0.92)")
     ax.axhline(1.00, color="red", linestyle="--", label="irreversible (+1.00)")
     ax.set_xlabel("Time t")
     ax.set_ylabel("dim4(t)")
-    ax.set_title("VPDE dim4 Dynamics (1D)")
+    ax.set_title(f"Phi-coupled VPDE (τ={cfg.tau:.2f})")
     ax.legend(fontsize=8)
     ax.grid(True, alpha=0.3)
 
@@ -50,8 +53,14 @@ def main() -> None:
     print(f"Saved plot to {out}/regime_transition.png")
     print(f"Stationary π = {theta.stationary_distribution()}")
 
+    usa_t, usa_traj = solve_vpde(0.94, cfg, controls=RampControls())
+    cross_idx = next((i for i, v in enumerate(usa_traj) if v >= 1.0), None)
+    if cross_idx is not None:
+        print(f"USA forecast: dim4=0.94 crosses +1.0 at t≈{usa_t[cross_idx]:.1f} yr")
+
     for v0 in initial_values:
-        final_regime = classify_regime(float(solve_vpde(v0)[1][-1]))
+        controls = RampControls() if v0 >= 0.90 else GOALDEN_CONTROLS
+        final_regime = classify_regime(float(solve_vpde(v0, cfg, controls=controls)[1][-1]))
         print(f"dim4₀={v0:.2f} → VPDE final regime: {final_regime.name}")
 
 

@@ -74,6 +74,7 @@ def export_equations_latex() -> dict[str, str]:
             __import__("volition.equations.dynamics", fromlist=["stability_condition"])
             .stability_condition()
         ),
+        "vpde": r"\frac{dV}{dt} = \frac{\Phi(V, i_t, u_t) - V}{\tau} + D\,\varepsilon(t)",
     }
 
 

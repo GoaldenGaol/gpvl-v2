@@ -32,6 +32,8 @@ gpvl export-latex                  # full arXiv bundle → docs/arxiv/
 gpvl export-latex -o build/arxiv   # custom output directory
 gpvl export-latex --equations-only # equations.tex + thresholds.tex only
 gpvl invariants                    # check empirical invariants A–E
+gpvl calibrate-vpde                # calibrate Phi-coupled VPDE time-scale τ
+gpvl calibrate-vpde --validate     # run USA + Korea anchors
 ```
 
 ### Symbolic equations and Φ transition map
@@ -117,12 +119,13 @@ print(f"threshold = {gt.threshold:.5f}")  # 0.11648
 assert gt.predict() == EquilibriumPrediction.COOPERATIVE
 ```
 
-### VPDE dynamics
+### VPDE dynamics (Phi-coupled)
 
 ```python
-from volition.vpde import solve_vpde
+from volition.vpde import solve_vpde, RampControls, default_calibrated_config
 
-t, dim4_traj = solve_vpde(dim4_initial=0.98)
+cfg = default_calibrated_config()  # τ calibrated to USA +1.0 @ 2029
+t, dim4_traj = solve_vpde(0.94, cfg, controls=RampControls())
 ```
 
 ### MCMC fertility model fit

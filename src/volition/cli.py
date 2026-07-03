@@ -12,6 +12,8 @@ from volition.data.firms import firm_validation_stats, load_firm_states, load_fi
 from volition.equations.invariants import check_all_invariants
 from volition.export.latex import write_arxiv_bundle, write_equations_tex
 from volition.paths import default_arxiv_dir
+from volition.vpde import calibrate_tau, default_calibrated_config, validate_calibration
+from volition.vpde.calibration import USA_TARGET
 
 
 def _cmd_version(_: argparse.Namespace) -> int:
@@ -90,7 +92,37 @@ def _cmd_info(_: argparse.Namespace) -> int:
     print(f"  Firms            : {len(firms)}")
     print(f"  Country r        : {country_stats['pearson_r']:.4f}")
     print(f"  Firm ROC-AUC     : {firm_stats['roc_auc']:.4f}")
+    print(f"  VPDE τ (cal.)    : {default_calibrated_config().tau:.4f}")
     print(f"  LaTeX output     : {default_arxiv_dir()}")
+    return 0
+
+
+def _cmd_calibrate_vpde(args: argparse.Namespace) -> int:
+    target = USA_TARGET
+    result = calibrate_tau(target)
+    if args.json:
+        print(json.dumps({
+            "tau": result.tau,
+            "target": result.target.name,
+            "dim4_initial": result.target.dim4_initial,
+            "dim4_target": result.target.dim4_target,
+            "target_time": result.target.target_time,
+            "achieved_crossing_time": result.achieved_crossing_time,
+            "residual": result.residual,
+            "dim4_final": result.dim4_final,
+        }, indent=2))
+    else:
+        print("VPDE Calibration (Phi-coupled)")
+        print(f"  Target           : {result.target.name}")
+        print(f"  τ                : {result.tau:.4f}")
+        print(f"  dim4₀ → +1.0     : t={result.achieved_crossing_time:.2f} yr (target {result.target.target_time})")
+        print(f"  Residual         : {result.residual:.4f}")
+        print(f"  dim4_final       : {result.dim4_final:.4f}")
+        if args.validate:
+            print("\nValidation anchors:")
+            for r in validate_calibration():
+                mark = "OK" if r.residual < 0.5 else "WARN"
+                print(f"  [{mark}] {r.target.name}: residual={r.residual:.4f}")
     return 0
 
 
@@ -135,6 +167,11 @@ def build_parser() -> argparse.ArgumentParser:
     inv = sub.add_parser("invariants", help="Check empirical invariants A–E")
     inv.add_argument("--json", action="store_true", help="Output as JSON")
     inv.set_defaults(func=_cmd_invariants)
+
+    cal = sub.add_parser("calibrate-vpde", help="Calibrate VPDE time-scale τ")
+    cal.add_argument("--json", action="store_true", help="Output as JSON")
+    cal.add_argument("--validate", action="store_true", help="Run all calibration anchors")
+    cal.set_defaults(func=_cmd_calibrate_vpde)
 
     return parser
 

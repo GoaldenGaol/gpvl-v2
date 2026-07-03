@@ -118,6 +118,13 @@ def export_equations_content() -> str:
         + r"""
 \end{equation}
 
+\subsection{VPDE (continuous)}
+\begin{equation}
+"""
+        + eq["vpde"]
+        + r"""
+\end{equation}
+
 \subsection{System Dynamics $S(t)$}
 \begin{align}
 """
