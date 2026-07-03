@@ -69,6 +69,7 @@ def export_preamble() -> str:
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{hyperref}
+\usepackage{url}
 """
 
 

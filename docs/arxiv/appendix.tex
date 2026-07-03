@@ -1,0 +1,25 @@
+\appendix
+\section{Octonion Multiplication Rules}
+\label{app:octonion}
+\begin{align}
+e_1 e_2 &= e_4 \\
+e_1 e_3 &= e_7 \\
+e_1 e_5 &= e_6 \\
+e_2 e_3 &= e_6 \\
+e_2 e_5 &= e_7 \\
+e_3 e_4 &= e_5 \\
+e_4 e_6 &= e_7 \\
+e_i^2 &= -1 \quad (i = 1,\ldots,7)
+\end{align}
+
+\section{Replication Commands}
+\label{app:replication}
+\begin{verbatim}
+pip install -e ".[dev]"
+gpvl validate
+gpvl invariants
+gpvl mcmc --full
+gpvl calibrate-vpde
+gpvl calibrate-geometry
+gpvl export-latex --manuscript
+\end{verbatim}

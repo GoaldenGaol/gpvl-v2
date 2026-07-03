@@ -1,0 +1,35 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{Country-Level Fertility Mapping}
+On the frozen 2023 cross-section ($N = 195$ countries),
+Pearson $r = -0.819$ and $R^2 = 0.671$.
+The framework panel target (1950--2023) reports $r = -0.934$ and
+$R^2 = 0.871$.
+
+\subsection{MCMC Posterior (Linear Model)}
+\begin{table}[h]
+\centering
+\begin{tabular}{lrr}
+\toprule
+Parameter & Median & 84\% CI \\
+\midrule
+$\alpha$ & -5.6255 & [-5.9752, -5.0733] \\
+$\beta$  & 7.1575  & [6.6744, 7.4474] \\
+$\sigma$ & 0.6547 & --- \\
+\bottomrule
+\end{tabular}
+\caption{MCMC posterior on 195-country full dataset.}
+\label{tab:mcmc}
+\end{table}
+
+\subsection{Firm-Level Fatal Pivot}
+Firm-level $\mathrm{dim4}$ predicts 5--7 year collapse with ROC-AUC $= 0.996$
+($N = 83$ firms).
+
+\subsection{Threshold Invariants}
+\begin{itemize}
+  \item $\mathrm{dim4} > 0.92$: cooperation collapse ($<40$ rounds)
+  \item $\mathrm{dim4} > 1.0$: irreversible band (36 countries above)
+  \item VPDE crossing time: $t = 5.89$ yr (residual $0.108$)
+\end{itemize}

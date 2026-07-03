@@ -28,7 +28,8 @@ After install, the `gpvl` command is available:
 gpvl info                          # project + dataset summary
 gpvl validate                      # dim4 → TFR validation stats
 gpvl validate --json               # machine-readable output
-gpvl export-latex                  # full arXiv bundle → docs/arxiv/
+gpvl export-latex --manuscript     # full arXiv manuscript → docs/arxiv/
+gpvl export-latex                  # equation fragment bundle
 gpvl export-latex -o build/arxiv   # custom output directory
 gpvl export-latex --equations-only # equations.tex + thresholds.tex only
 gpvl invariants                    # check empirical invariants A–E
@@ -156,20 +157,20 @@ print(f"alpha={result.alpha:.3f}, r={result.pearson_r:.3f}, R²={result.r_square
 print(f"All checks passed: {report.all_passed}")
 ```
 
-### LaTeX export
+### LaTeX export (arXiv manuscript)
 
 ```python
-from volition.export.latex import write_arxiv_bundle
+from volition.export import write_full_manuscript
 
-result = write_arxiv_bundle("docs/arxiv")
-print(f"Main document: {result.main_tex}")
-# Compile: pdflatex main.tex  (from docs/arxiv/)
+result = write_full_manuscript("docs/arxiv")
+print(f"Manuscript: {result.main_tex}")
+# pdflatex main.tex  (from docs/arxiv/)
 ```
 
 Or via CLI:
 
 ```bash
-gpvl export-latex
+gpvl export-latex --manuscript
 ```
 
 ## Simulations
@@ -223,11 +224,12 @@ $\mathrm{dim4} > 1.00$ (irreversibility) show zero historical reversals.
 \end{abstract}
 ```
 
-Generate full arXiv manuscript fragments:
+Generate full arXiv submission:
 
 ```bash
-gpvl export-latex
-# writes docs/arxiv/main.tex, equations.tex, thresholds.tex, validation.tex, ...
+gpvl export-latex --manuscript
+# writes main.tex, introduction.tex, methods.tex, results.tex,
+# discussion.tex, appendix.tex, references.tex, 00README.txt, ...
 ```
 
 ## Core Documents

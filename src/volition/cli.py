@@ -11,6 +11,7 @@ from volition.data.dim4 import load_countries, load_countries_full, validation_s
 from volition.data.firms import firm_validation_stats, load_firm_states, load_firms_df
 from volition.equations.invariants import check_all_invariants
 from volition.export.latex import write_arxiv_bundle, write_equations_tex
+from volition.export.manuscript import write_full_manuscript
 from volition.paths import default_arxiv_dir
 from volition.geometry import calibrate_geometry
 from volition.mcmc import ModelKind, run_mcmc, validate_mcmc_result
@@ -39,6 +40,25 @@ def _cmd_validate(args: argparse.Namespace) -> int:
 
 def _cmd_export_latex(args: argparse.Namespace) -> int:
     output = args.output or default_arxiv_dir()
+
+    if args.manuscript:
+        result = write_full_manuscript(output)
+        print(f"Wrote full manuscript to {result.output_dir}/")
+        print(f"  main.tex       : {result.main_tex.name}")
+        for name in (
+            "introduction.tex",
+            "methods.tex",
+            "results.tex",
+            "discussion.tex",
+            "equations.tex",
+            "thresholds.tex",
+            "validation.tex",
+            "appendix.tex",
+            "references.tex",
+            "00README.txt",
+        ):
+            print(f"  {name:<15}: {result.files[name].name}")
+        return 0
 
     if args.bundle:
         result = write_arxiv_bundle(output)
@@ -231,6 +251,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Write only equations.tex and thresholds.tex",
     )
+    export.add_argument(
+        "--manuscript",
+        action="store_true",
+        help="Write full arXiv manuscript (intro, methods, results, appendix)",
+    )
     export.set_defaults(func=_cmd_export_latex)
 
     inv = sub.add_parser("invariants", help="Check empirical invariants A–E")
@@ -262,8 +287,11 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
-    if args.command == "export-latex" and args.equations_only:
-        args.bundle = False
+    if args.command == "export-latex":
+        if args.equations_only:
+            args.bundle = False
+        if args.manuscript:
+            args.bundle = False
 
     return args.func(args)
 

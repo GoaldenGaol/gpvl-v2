@@ -1,0 +1,27 @@
+\section{Methods}
+\label{sec:methods}
+
+\subsection{Volitional State Vector}
+The state $V(t) = [\mathrm{dim1},\ldots,\mathrm{dim7}]$ is extracted from
+narrative embeddings (frozen November 2023). The active scalar $\mathrm{dim4}$
+maps to total fertility rate via $ \mathrm{TFR}(t{+}18) = f(\mathrm{dim4}(t))$.
+
+\subsection{Transition Map and VPDE}
+Discrete dynamics follow $V(t{+}1) = \Phi(V(t), i_t, u_t)$. The continuous
+extension solves
+\[
+  \frac{dV}{dt} = \frac{\Phi(V, i_t, u_t) - V}{\tau} + D\,\varepsilon(t).
+\]
+We calibrate $\tau = 0.388$ so $\mathrm{dim4} = 0.94$ crosses the
+irreversibility threshold at $t \approx 5.9$ years
+(USA forecast anchor).
+
+\subsection{MCMC Inference}
+We fit the linear model $\mathrm{TFR} = \alpha\cdot\mathrm{dim4} + \beta$
+via affine-invariant ensemble MCMC (emcee), reporting posterior medians and
+84\% credible intervals.
+
+\subsection{Octonion / $G_2$ Embedding}
+The 7-D latent vector embeds into the imaginary octonion units $\mathbb{O}$;
+$G_2$ calibration uses the empirical $\mathrm{dim4}$ distribution
+($\mu = 0.855$, $\sigma = 0.161$, $N = 195$).
