@@ -133,8 +133,10 @@ Firm-level $\mathrm{{dim4}}$ predicts 5--7 year collapse with ROC-AUC $= {fs['ro
 \subsection{{Threshold Invariants}}
 \begin{{itemize}}
   \item $\mathrm{{dim4}} > {DIM4_COOP_COLLAPSE}$: cooperation collapse ($<40$ rounds)
-  \item $\mathrm{{dim4}} > {DIM4_IRREVERSIBLE}$: irreversible band ({int(cs['n_above_irreversible'])} countries above)
-  \item VPDE crossing time: $t = {vpde.achieved_crossing_time:.2f}$ yr (residual ${vpde.residual:.3f}$)
+  \item $\mathrm{{dim4}} > {DIM4_IRREVERSIBLE}$: irreversible band
+        ({int(cs['n_above_irreversible'])} countries above)
+  \item VPDE crossing time: $t = {vpde.achieved_crossing_time:.2f}$ yr
+        (residual ${vpde.residual:.3f}$)
 \end{{itemize}}
 """
 

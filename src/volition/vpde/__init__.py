@@ -1,9 +1,9 @@
 """Volitional PDE (VPDE) system — Phi-coupled continuous dynamics."""
 
 from volition.vpde.calibration import (
+    USA_TARGET,
     CalibrationResult,
     CalibrationTarget,
-    USA_TARGET,
     calibrate_tau,
     default_calibrated_config,
     get_calibrated_tau,

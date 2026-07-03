@@ -8,7 +8,6 @@ import sympy as sp
 
 from volition.equations.dynamics import competence_transition, property_transition
 from volition.equations.symbols import (
-    F_i,
     P,
     P_n,
     aggression,

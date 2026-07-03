@@ -8,7 +8,7 @@ from enum import Enum, auto
 import numpy as np
 from numpy.typing import NDArray
 
-from volition.constants import DIM4_COOP_COLLAPSE, DIM4_IRREVERSIBLE, DEFAULT_THETA
+from volition.constants import DEFAULT_THETA, DIM4_COOP_COLLAPSE, DIM4_IRREVERSIBLE
 
 
 class Regime(Enum):
@@ -102,7 +102,11 @@ class RegimeTransitionMatrix:
             chain.append(current)
         return chain
 
-    def stationary_distribution(self, tol: float = 1e-12, max_iter: int = 10_000) -> NDArray[np.float64]:
+    def stationary_distribution(
+        self,
+        tol: float = 1e-12,
+        max_iter: int = 10_000,
+    ) -> NDArray[np.float64]:
         """
         Compute stationary distribution π via power iteration.
 

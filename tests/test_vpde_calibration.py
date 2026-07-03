@@ -2,7 +2,6 @@
 
 from volition.constants import DIM4_IRREVERSIBLE
 from volition.vpde import validate_calibration
-from volition.vpde.calibration import KOREA_TARGET
 
 
 def test_validate_calibration_usa():

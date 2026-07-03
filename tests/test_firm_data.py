@@ -1,6 +1,5 @@
 """Tests for firm-level dim4 data and validation."""
 
-from volition.constants import DIM4_FIRM_HIGH_RISK
 from volition.data.firms import (
     classify_firm_risk,
     firm_validation_stats,

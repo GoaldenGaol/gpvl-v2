@@ -17,7 +17,11 @@ def n_params(kind: ModelKind) -> int:
     return 3 if kind == ModelKind.LINEAR else 4
 
 
-def predict(dim4: NDArray[np.float64], theta: NDArray[np.float64], kind: ModelKind) -> NDArray[np.float64]:
+def predict(
+    dim4: NDArray[np.float64],
+    theta: NDArray[np.float64],
+    kind: ModelKind,
+) -> NDArray[np.float64]:
     if kind == ModelKind.LINEAR:
         alpha, beta, _ = theta
         return alpha * dim4 + beta

@@ -12,9 +12,9 @@ from volition.data.firms import firm_validation_stats, load_firm_states, load_fi
 from volition.equations.invariants import check_all_invariants
 from volition.export.latex import write_arxiv_bundle, write_equations_tex
 from volition.export.manuscript import write_full_manuscript
-from volition.paths import default_arxiv_dir
 from volition.geometry import calibrate_geometry
 from volition.mcmc import ModelKind, run_mcmc, validate_mcmc_result
+from volition.paths import default_arxiv_dir
 from volition.vpde import calibrate_tau, default_calibrated_config, validate_calibration
 from volition.vpde.calibration import USA_TARGET
 
@@ -118,7 +118,7 @@ def _cmd_calibrate_geometry(args: argparse.Namespace) -> int:
     else:
         print("G2 / Octonion Geometry Calibration")
         print(f"  {result.summary()}")
-        print(f"  G2 Lie algebra dim : 14")
+        print("  G2 Lie algebra dim : 14")
         print(f"  dim4 axis          : e{proj.calibration.dim4_axis if proj.calibration else 4}")
     return 0
 
@@ -204,7 +204,9 @@ def _cmd_calibrate_vpde(args: argparse.Namespace) -> int:
         print("VPDE Calibration (Phi-coupled)")
         print(f"  Target           : {result.target.name}")
         print(f"  τ                : {result.tau:.4f}")
-        print(f"  dim4₀ → +1.0     : t={result.achieved_crossing_time:.2f} yr (target {result.target.target_time})")
+        crossing = result.achieved_crossing_time
+        target_t = result.target.target_time
+        print(f"  dim4₀ → +1.0     : t={crossing:.2f} yr (target {target_t})")
         print(f"  Residual         : {result.residual:.4f}")
         print(f"  dim4_final       : {result.dim4_final:.4f}")
         if args.validate:

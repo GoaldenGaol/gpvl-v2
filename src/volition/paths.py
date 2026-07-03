@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import sys
 from functools import lru_cache
 from importlib import resources
 from pathlib import Path

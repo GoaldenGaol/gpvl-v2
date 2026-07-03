@@ -1,6 +1,5 @@
 """Tests for package and data path resolution."""
 
-from pathlib import Path
 
 from volition.paths import data_file, package_root, project_root
 
