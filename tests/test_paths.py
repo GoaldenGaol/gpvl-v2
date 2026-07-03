@@ -25,5 +25,6 @@ def test_all_datasets_resolvable():
         "dim4_frozen_2023.csv",
         "dim4_frozen_2023_full.csv",
         "dim4_firms_frozen_2023.csv",
+        "dim4_panel_1950_2023.csv",
     ):
         assert data_file(name).exists()

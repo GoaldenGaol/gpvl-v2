@@ -9,6 +9,7 @@ import sys
 from volition import __version__
 from volition.data.dim4 import load_countries, load_countries_full, validation_stats
 from volition.data.firms import firm_validation_stats, load_firm_states, load_firms_df
+from volition.data.panel import panel_validation_stats
 from volition.equations.invariants import check_all_invariants
 from volition.export.latex import write_arxiv_bundle, write_equations_tex
 from volition.export.manuscript import write_full_manuscript
@@ -25,6 +26,32 @@ def _cmd_version(_: argparse.Namespace) -> int:
 
 
 def _cmd_validate(args: argparse.Namespace) -> int:
+    if args.panel:
+        stats = panel_validation_stats()
+        if args.json:
+            print(json.dumps(stats, indent=2))
+        else:
+            print("dim4(t) → TFR(t+18) Panel Validation (1950–2023)")
+            targets = stats["framework_targets"]
+            print(
+                f"  Pearson r     : {stats['pearson_r']:.4f}  "
+                f"(target {targets['pearson_r']})"
+            )
+            print(
+                f"  R²            : {stats['r_squared']:.4f}  "
+                f"(target {targets['r_squared']})"
+            )
+            print(f"  p-value       : {stats['p_value']:.2e}")
+            print(f"  Lead-lag pairs: {int(stats['n_pairs'])}")
+            print(f"  Countries (N) : {int(stats['n_countries'])}")
+            train = stats["train"]
+            test = stats["test"]
+            print(f"  Train r / R²  : {train['pearson_r']:.4f} / {train['r_squared']:.4f}")
+            print(f"  Test r / R²   : {test['pearson_r']:.4f} / {test['r_squared']:.4f}")
+            mark = "PASS" if stats["framework_passed"] else "FAIL"
+            print(f"  Framework     : {mark}")
+        return 0 if stats["framework_passed"] else 1
+
     stats = validation_stats()
     if args.json:
         print(json.dumps(stats, indent=2))
@@ -233,6 +260,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     validate = sub.add_parser("validate", help="Run dim4 validation statistics")
     validate.add_argument("--json", action="store_true", help="Output as JSON")
+    validate.add_argument(
+        "--panel",
+        action="store_true",
+        help="Validate 1950–2023 panel dim4(t)→TFR(t+18) against framework targets",
+    )
     validate.set_defaults(func=_cmd_validate)
 
     export = sub.add_parser("export-latex", help="Generate LaTeX fragments for arXiv")

@@ -82,6 +82,22 @@ def mock_manuscript_stats(monkeypatch):
     monkeypatch.setattr("volition.export.manuscript._gather_stats", lambda: stats)
 
 
+def test_cli_validate_panel(capsys):
+    assert main(["validate", "--panel"]) == 0
+    out = capsys.readouterr().out
+    assert "Panel Validation" in out
+    assert "Framework" in out
+    assert "PASS" in out
+
+
+def test_cli_validate_panel_json(capsys):
+    assert main(["validate", "--panel", "--json"]) == 0
+    data = json.loads(capsys.readouterr().out)
+    assert data["framework_passed"] is True
+    assert "train" in data
+    assert "test" in data
+
+
 def test_cli_export_manuscript(tmp_path: Path, mock_manuscript_stats):
     out = tmp_path / "manuscript"
     assert main(["export-latex", "-o", str(out), "--manuscript"]) == 0
