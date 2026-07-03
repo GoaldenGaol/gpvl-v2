@@ -3,10 +3,19 @@
 
 $ErrorActionPreference = "Stop"
 $RepoRoot = Split-Path -Parent $PSScriptRoot
-$Gh = "C:\Program Files\GitHub CLI\gh.exe"
 
-if (-not (Test-Path $Gh)) {
-    $Gh = (Get-Command gh -ErrorAction SilentlyContinue).Source
+$Gh = (Get-Command gh -ErrorAction SilentlyContinue)?.Source
+if (-not $Gh) {
+    $candidates = @(
+        "C:\Program Files\GitHub CLI\gh.exe",
+        "C:\Program Files (x86)\GitHub CLI\gh.exe"
+    )
+    foreach ($candidate in $candidates) {
+        if (Test-Path $candidate) {
+            $Gh = $candidate
+            break
+        }
+    }
 }
 if (-not $Gh) {
     throw "GitHub CLI (gh) not found. Install from https://cli.github.com/"
@@ -20,11 +29,8 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 $repo = "GoaldenGaol/gpvl-v2"
-$exists = $false
-try {
-    & $Gh repo view $repo | Out-Null
-    if ($LASTEXITCODE -eq 0) { $exists = $true }
-} catch {}
+& $Gh repo view $repo 2>$null | Out-Null
+$exists = $LASTEXITCODE -eq 0
 
 if (-not $exists) {
     Write-Host "Creating public repository $repo ..."
