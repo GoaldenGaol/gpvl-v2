@@ -37,6 +37,7 @@ gpvl calibrate-vpde --validate     # run USA + Korea anchors
 gpvl mcmc                          # MCMC linear fit (59-country snapshot)
 gpvl mcmc --full                   # 195-country full dataset
 gpvl mcmc --quadratic --json       # quadratic model, JSON output
+gpvl calibrate-geometry            # octonion/G2 projection from dim4
 ```
 
 ### Symbolic equations and Φ transition map
@@ -129,6 +130,19 @@ from volition.vpde import solve_vpde, RampControls, default_calibrated_config
 
 cfg = default_calibrated_config()  # τ calibrated to USA +1.0 @ 2029
 t, dim4_traj = solve_vpde(0.94, cfg, controls=RampControls())
+```
+
+### Octonion / G2 geometry
+
+```python
+from volition.geometry import Octonion, calibrate_geometry, g2_cross_product
+
+e1, e2 = Octonion.unit(1), Octonion.unit(2)
+print((e1 * e2).components)  # Fano plane: e1*e2 = e4
+
+proj, result = calibrate_geometry()
+oct = proj.embed_dim4(1.41)
+print(result.summary())  # roundtrip + rank preserved
 ```
 
 ### MCMC fertility model fit

@@ -12,6 +12,7 @@ from volition.data.firms import firm_validation_stats, load_firm_states, load_fi
 from volition.equations.invariants import check_all_invariants
 from volition.export.latex import write_arxiv_bundle, write_equations_tex
 from volition.paths import default_arxiv_dir
+from volition.geometry import calibrate_geometry
 from volition.mcmc import ModelKind, run_mcmc, validate_mcmc_result
 from volition.vpde import calibrate_tau, default_calibrated_config, validate_calibration
 from volition.vpde.calibration import USA_TARGET
@@ -79,6 +80,26 @@ def _cmd_invariants(args: argparse.Namespace) -> int:
         for r in results:
             mark = "PASS" if r.satisfied else "FAIL"
             print(f"  [{mark}] {r.invariant}: {r.detail}")
+    return 0
+
+
+def _cmd_calibrate_geometry(args: argparse.Namespace) -> int:
+    proj, result = calibrate_geometry()
+    if args.json:
+        print(json.dumps({
+            "dim4_mean": result.dim4_mean,
+            "dim4_std": result.dim4_std,
+            "n_samples": result.n_samples,
+            "roundtrip_max_error": result.roundtrip_max_error,
+            "spearman_r": result.spearman_r,
+            "rank_preserved": result.rank_correlation_preserved,
+            "g2_dim": 14,
+        }, indent=2))
+    else:
+        print("G2 / Octonion Geometry Calibration")
+        print(f"  {result.summary()}")
+        print(f"  G2 Lie algebra dim : 14")
+        print(f"  dim4 axis          : e{proj.calibration.dim4_axis if proj.calibration else 4}")
     return 0
 
 
@@ -229,6 +250,10 @@ def build_parser() -> argparse.ArgumentParser:
     mcmc.add_argument("--seed", type=int, default=42, help="Random seed")
     mcmc.add_argument("--json", action="store_true", help="Output as JSON")
     mcmc.set_defaults(func=_cmd_mcmc)
+
+    geom = sub.add_parser("calibrate-geometry", help="Calibrate G2 projection from dim4")
+    geom.add_argument("--json", action="store_true", help="Output as JSON")
+    geom.set_defaults(func=_cmd_calibrate_geometry)
 
     return parser
 
