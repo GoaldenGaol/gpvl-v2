@@ -34,6 +34,9 @@ gpvl export-latex --equations-only # equations.tex + thresholds.tex only
 gpvl invariants                    # check empirical invariants A–E
 gpvl calibrate-vpde                # calibrate Phi-coupled VPDE time-scale τ
 gpvl calibrate-vpde --validate     # run USA + Korea anchors
+gpvl mcmc                          # MCMC linear fit (59-country snapshot)
+gpvl mcmc --full                   # 195-country full dataset
+gpvl mcmc --quadratic --json       # quadratic model, JSON output
 ```
 
 ### Symbolic equations and Φ transition map
@@ -131,10 +134,12 @@ t, dim4_traj = solve_vpde(0.94, cfg, controls=RampControls())
 ### MCMC fertility model fit
 
 ```python
-from volition.mcmc import fit_fertility_model
+from volition.mcmc import ModelKind, run_mcmc, validate_mcmc_result
 
-params = fit_fertility_model(n_steps=500, burn_in=100)
-print(f"alpha={params.alpha:.3f}, beta={params.beta:.3f}, r={params.pearson_r:.3f}")
+result = run_mcmc(kind=ModelKind.LINEAR, use_full_dataset=True, seed=42)
+report = validate_mcmc_result(result, dataset_label="full_195")
+print(f"alpha={result.alpha:.3f}, r={result.pearson_r:.3f}, R²={result.r_squared:.3f}")
+print(f"All checks passed: {report.all_passed}")
 ```
 
 ### LaTeX export

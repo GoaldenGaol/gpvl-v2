@@ -12,6 +12,7 @@ from volition.data.firms import firm_validation_stats, load_firm_states, load_fi
 from volition.equations.invariants import check_all_invariants
 from volition.export.latex import write_arxiv_bundle, write_equations_tex
 from volition.paths import default_arxiv_dir
+from volition.mcmc import ModelKind, run_mcmc, validate_mcmc_result
 from volition.vpde import calibrate_tau, default_calibrated_config, validate_calibration
 from volition.vpde.calibration import USA_TARGET
 
@@ -78,6 +79,53 @@ def _cmd_invariants(args: argparse.Namespace) -> int:
         for r in results:
             mark = "PASS" if r.satisfied else "FAIL"
             print(f"  [{mark}] {r.invariant}: {r.detail}")
+    return 0
+
+
+def _cmd_mcmc(args: argparse.Namespace) -> int:
+    kind = ModelKind.QUADRATIC if args.quadratic else ModelKind.LINEAR
+    result = run_mcmc(
+        kind=kind,
+        n_steps=args.steps,
+        burn_in=args.burn_in,
+        seed=args.seed,
+        use_full_dataset=args.full,
+    )
+    report = validate_mcmc_result(
+        result,
+        dataset_label="full_195" if args.full else "snapshot_59",
+    )
+
+    if args.json:
+        print(json.dumps({
+            "model": result.kind.name,
+            "alpha": result.alpha,
+            "beta": result.beta,
+            "gamma": result.gamma,
+            "sigma": result.sigma,
+            "pearson_r": result.pearson_r,
+            "r_squared": result.r_squared,
+            "acceptance_fraction": result.acceptance_fraction,
+            "n_obs": result.n_obs,
+            "validation": report.summary_dict(),
+        }, indent=2))
+    else:
+        label = "quadratic" if args.quadratic else "linear"
+        ds = "195-country" if args.full else "59-country snapshot"
+        print(f"MCMC Fertility Fit ({label}, {ds})")
+        print(f"  alpha           : {result.alpha:.4f}")
+        print(f"  beta            : {result.beta:.4f}")
+        if result.gamma is not None:
+            print(f"  gamma           : {result.gamma:.4f}")
+        print(f"  sigma           : {result.sigma:.4f}")
+        print(f"  Pearson r       : {result.pearson_r:.4f}")
+        print(f"  R²              : {result.r_squared:.4f}")
+        print(f"  acceptance      : {result.acceptance_fraction:.3f}")
+        print(f"  seed            : {result.seed}")
+        print("\nValidation:")
+        for check in report.checks:
+            mark = "PASS" if check.passed else "FAIL"
+            print(f"  [{mark}] {check.name}: {check.detail}")
     return 0
 
 
@@ -172,6 +220,15 @@ def build_parser() -> argparse.ArgumentParser:
     cal.add_argument("--json", action="store_true", help="Output as JSON")
     cal.add_argument("--validate", action="store_true", help="Run all calibration anchors")
     cal.set_defaults(func=_cmd_calibrate_vpde)
+
+    mcmc = sub.add_parser("mcmc", help="MCMC fertility model fit + validation")
+    mcmc.add_argument("--full", action="store_true", help="Use 195-country full dataset")
+    mcmc.add_argument("--quadratic", action="store_true", help="Quadratic model")
+    mcmc.add_argument("--steps", type=int, default=1000, help="MCMC steps")
+    mcmc.add_argument("--burn-in", type=int, default=200, help="Burn-in steps")
+    mcmc.add_argument("--seed", type=int, default=42, help="Random seed")
+    mcmc.add_argument("--json", action="store_true", help="Output as JSON")
+    mcmc.set_defaults(func=_cmd_mcmc)
 
     return parser
 
